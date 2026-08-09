@@ -1,0 +1,22 @@
+{
+  "name": "flood-monitor",
+  "version": "0.2.0+codex.20260809075149",
+  "description": "Modular flood intelligence workflows for auditable collection, extraction, modelling, drainage analysis, and reporting.",
+  "author": {
+    "name": "Local developer"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Flood Monitor",
+    "shortDescription": "Build auditable flood intelligence workflows.",
+    "longDescription": "Coordinate six focused Skills for flood-source collection, evidence extraction, model-backed inundation analysis, drainage diagnosis, and interactive reporting.",
+    "developerName": "Local developer",
+    "category": "Productivity",
+    "capabilities": [
+      "Research",
+      "Analysis",
+      "Visualization"
+    ],
+    "defaultPrompt": "Use $flood-monitor-agent to build an auditable Hong Kong flood intelligence report."
+  }
+}

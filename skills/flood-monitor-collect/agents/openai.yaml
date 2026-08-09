@@ -1,0 +1,4 @@
+interface:
+  display_name: "FloodMonitor Collect"
+  short_description: "Acquire and normalize public flood-relevant sources"
+  default_prompt: "Use $flood-monitor-collect to acquire normalized flood-relevant source records."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "FloodMonitor Drainage"
+  short_description: "Analyze hotspots and drainage-system associations"
+  default_prompt: "Use $flood-monitor-drainage to assess recurrent flooding and drainage associations."

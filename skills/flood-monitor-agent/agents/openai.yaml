@@ -1,0 +1,4 @@
+interface:
+  display_name: "FloodMonitor Agent"
+  short_description: "Coordinate the minimum flood intelligence workflow"
+  default_prompt: "Use $flood-monitor-agent to coordinate a Hong Kong flood intelligence workflow."

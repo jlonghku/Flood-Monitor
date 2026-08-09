@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>香港近3日水浸综合来源地图 2026-06-16 至 2026-06-19</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+:root {
+  --bg:#f6f8fb; --card:#fff; --text:#1f2937; --muted:#5d6675; --line:#d8dee9;
+  --red:#d7191c; --orange:#fdae61; --blue:#2c7bb6; --purple:#7b3294;
+}
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,"Noto Sans SC","Microsoft YaHei",sans-serif; }
+#map { height:72vh; width:100%; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+.panel { max-width:1360px; margin:0 auto; padding:16px 20px; }
+.title { font-size:25px; font-weight:800; margin:4px 0 8px; }
+.subtitle { color:var(--muted); line-height:1.6; font-size:14px; }
+.grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(185px,1fr)); gap:10px; margin-top:12px; }
+.card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:12px 14px; box-shadow:0 1px 4px rgba(0,0,0,.04); }
+.num { font-size:28px; font-weight:800; }
+.label { color:var(--muted); font-size:13px; line-height:1.4; }
+.warn { background:#fff8e6; border:1px solid #f1d082; border-radius:12px; padding:10px 12px; margin-top:12px; line-height:1.55; font-size:14px; }
+.note { background:#eef7ff; border:1px solid #a8cff0; border-radius:12px; padding:10px 12px; margin-top:10px; line-height:1.55; font-size:14px; }
+table { width:100%; border-collapse:collapse; background:white; margin-top:12px; font-size:13px; }
+th,td { border:1px solid var(--line); padding:8px; vertical-align:top; }
+th { background:#eef2f7; text-align:left; position:sticky; top:0; z-index:1; }
+a { color:#155db1; text-decoration:none; }
+a:hover { text-decoration:underline; }
+.tag { display:inline-block; padding:2px 7px; border-radius:999px; font-size:12px; margin:1px 0; }
+.tag-red { background:#ffe5e2; color:#8f1612; }
+.tag-orange { background:#fff1db; color:#805200; }
+.tag-blue { background:#e7f0ff; color:#174d8c; }
+.tag-purple { background:#f3e6ff; color:#5b2175; }
+.small { font-size:12px; color:var(--muted); }
+.legend { background:#fff; padding:10px 12px; border-radius:12px; box-shadow:0 2px 12px rgba(0,0,0,.18); line-height:1.55; font-size:13px; }
+.dot { display:inline-block; width:11px; height:11px; border-radius:50%; margin-right:6px; vertical-align:middle; }
+.source-list li { margin:6px 0; line-height:1.45; }
+</style>
+</head>
+<body>
+<div class="panel">
+  <div class="title">香港近 3 日水浸综合来源可视化地图</div>
+  <div class="subtitle">
+    覆盖时间：2026-06-16 至 2026-06-19 01:15 HKT。生成时间：2026-06-19 01:15 HKT。
+    本版新增了 China Daily 的区域级水浸报告，并保留 Routejam/RTHK/data.gov.hk 的街段级确认点位。
+    点位按证据等级分层：A=街段/设施级确认，B=区域级水浸报告，C=强降雨风险或交通防护影响点。
+  </div>
+  <div class="grid">
+    <div class="card"><div class="num">6</div><div class="label">街段/设施级确认水浸</div></div>
+    <div class="card"><div class="num">5</div><div class="label">区域级水浸/风险补充</div></div>
+    <div class="card"><div class="num">3</div><div class="label">交通防护影响点，未确认水浸</div></div>
+    <div class="card"><div class="num">0</div><div class="label">官方公开精确水深</div></div>
+  </div>
+  <div class="warn">
+    <b>水深和范围：</b>本次公开来源没有给出官方精确水深或淹没边界。
+    图中所有水深/范围估计均明确写为“估计/未公布”。区域级点位只用于提示可能受影响区域，不应当与街段级确认点重复统计。
+  </div>
+  <div class="note">
+    <b>重要排除：</b>The Standard 关于“坪輋路巴士车厢进水、的士半淹”的报道日期是 2026-05-21，不属于最近 3 天，因此没有并入这次 6月18日地图。
+  </div>
+</div>
+<div id="map"></div>
+
+<div class="panel">
+  <div class="title">综合点位表</div>
+  <table>
+    <thead>
+      <tr><th>ID</th><th>类别</th><th>时间</th><th>位置</th><th>水深</th><th>范围</th><th>影响与证据</th><th>来源</th></tr>
+    </thead>
+    <tbody>
+
+<tr>
+<td><b>F01</b><br><span class="small">证据等级 A</span></td>
+<td><span class="tag tag-red">确认道路水浸</span><br><span class="small">街段级｜可信度：高</span></td>
+<td>2026-06-18<br>约14:36<br>16:22–16:25 交通恢复</td>
+<td>古洞路近古洞北路（近白石凹交汇处）<br><span class="small">北区 / 古洞<br>22.5069, 114.0869</span></td>
+<td>官方：未公布<br>估计：0.25–0.45 m（估计/未公布）<br><span class="small">明确街段水浸且交通受影响；未见官方水深，按道路可通行性保守估计。</span></td>
+<td>官方：未公布<br>估计：约150–300 m道路段，约0.3–0.8 ha（估计/未公布）</td>
+<td>道路水浸，交通及巴士服务受影响后恢复。<br><span class="small">交通消息列为水浸路段，后通报水浸处理、交通复常。</span></td>
+<td><a href="https://news.routejam.com/" target="_blank">Routejam 汇集香港电台及 data.gov.hk/运输署交通消息</a></td>
+</tr>
+<tr>
+<td><b>F02</b><br><span class="small">证据等级 A</span></td>
+<td><span class="tag tag-red">确认道路水浸</span><br><span class="small">街段级｜可信度：高</span></td>
+<td>2026-06-18<br>约14:36<br>16:22–16:25 交通恢复</td>
+<td>粉锦公路近安圃村<br><span class="small">北区 / 粉锦公路<br>22.4903, 114.1171</span></td>
+<td>官方：未公布<br>估计：0.15–0.35 m（估计/未公布）<br><span class="small">明确道路水浸并影响公共交通，但未称全线封闭或车辆受困。</span></td>
+<td>官方：未公布<br>估计：约100–250 m道路段，约0.2–0.6 ha（估计/未公布）</td>
+<td>影响九巴77K等及龙运E36/A36等服务。<br><span class="small">交通消息列为水浸路段，巴士/龙运服务受影响，后通报恢复。</span></td>
+<td><a href="https://news.routejam.com/" target="_blank">Routejam 汇集香港电台及 data.gov.hk/运输署交通消息</a></td>
+</tr>
+<tr>
+<td><b>F03</b><br><span class="small">证据等级 A</span></td>
+<td><span class="tag tag-red">确认道路水浸</span><br><span class="small">街段级｜可信度：高</span></td>
+<td>2026-06-18<br>约13:50<br>16:22–16:25 交通恢复</td>
+<td>坪輋路近蓮麻坑路<br><span class="small">北区 / 打鼓岭—坪輋<br>22.5295, 114.1536</span></td>
+<td>官方：未公布<br>估计：0.10–0.30 m（估计/未公布）<br><span class="small">明确水浸但只提示小心驾驶，未见本次官方车辆半淹或封路描述。</span></td>
+<td>官方：未公布<br>估计：约80–200 m道路段，约0.15–0.5 ha（估计/未公布）</td>
+<td>影响九巴79K及新界专线小巴71、71A、72、605等。<br><span class="small">交通消息称坪輋路近蓮麻坑路一段水浸，提醒驾驶人士小心，后通报恢复。</span></td>
+<td><a href="https://news.routejam.com/" target="_blank">Routejam 汇集香港电台及 data.gov.hk/运输署交通消息</a></td>
+</tr>
+<tr>
+<td><b>F04</b><br><span class="small">证据等级 A-</span></td>
+<td><span class="tag tag-red">确认道路水浸</span><br><span class="small">街段级｜可信度：中高</span></td>
+<td>2026-06-18<br>约14:36<br>16:22–16:25 交通恢复</td>
+<td>唐人新村交汇处（部分消息写作“康人新村交汇处”，疑为同一处）<br><span class="small">元朗 / 唐人新村<br>22.4318, 114.0088</span></td>
+<td>官方：未公布<br>估计：0.10–0.25 m（估计/未公布）<br><span class="small">明确水浸，但地名写法需人工复核，范围保守。</span></td>
+<td>官方：未公布<br>估计：交汇处及相邻道路约80–180 m，约0.1–0.4 ha（估计/未公布）</td>
+<td>交汇处水浸，交通后恢复。<br><span class="small">交通消息列为水浸路段，后列为交通恢复路段；地名存在唐人/康人写法差异。</span></td>
+<td><a href="https://news.routejam.com/" target="_blank">Routejam 汇集香港电台及 data.gov.hk/运输署交通消息</a></td>
+</tr>
+<tr>
+<td><b>F05</b><br><span class="small">证据等级 A-</span></td>
+<td><span class="tag tag-red">确认道路水浸</span><br><span class="small">街段级｜可信度：中高</span></td>
+<td>2026-06-18<br>约14:36<br>16:22–16:25 交通恢复</td>
+<td>锦河路近河背村<br><span class="small">元朗 / 八乡—河背<br>22.4455, 114.1052</span></td>
+<td>官方：未公布<br>估计：0.10–0.25 m（估计/未公布）<br><span class="small">明确水浸路段，但无封路、车辆受困或水深描述。</span></td>
+<td>官方：未公布<br>估计：约80–200 m道路段，约0.15–0.5 ha（估计/未公布）</td>
+<td>道路水浸，交通后恢复。<br><span class="small">交通消息列为水浸路段，后列为交通恢复路段。</span></td>
+<td><a href="https://news.routejam.com/" target="_blank">Routejam 汇集香港电台及 data.gov.hk/运输署交通消息</a></td>
+</tr>
+<tr>
+<td><b>F06</b><br><span class="small">证据等级 A</span></td>
+<td><span class="tag tag-orange">确认设施水浸</span><br><span class="small">设施级｜可信度：高</span></td>
+<td>2026-06-18<br>约15:25<br>16:10 仍暂停服务；China Daily 19:28更新仍称暂停至另行通知</td>
+<td>文锦渡口岸 / 文锦渡管制站<br><span class="small">北区 / 文锦渡<br>22.5360, 114.1200</span></td>
+<td>官方：未公布<br>估计：0.20–0.50 m（估计/未公布）<br><span class="small">设施运作暂停，影响程度高；无官方水深，按设施水浸保守估计。</span></td>
+<td>官方：未公布<br>估计：口岸部分设施及通道，约0.5–2 ha（估计/未公布）</td>
+<td>旅客及货运清关服务暂停，跨境巴士停驶，旅客和跨境车辆须改用其他口岸。<br><span class="small">交通消息称部分设施水浸并暂停旅客及货运清关；China Daily称保安局声明，文锦渡管制站因暴雨和该区水浸暂停旅客及货运清关服务。</span></td>
+<td><a href="https://www.chinadailyasia.com/hk/article/635184" target="_blank">Routejam + China Daily Asia</a></td>
+</tr>
+<tr>
+<td><b>R01</b><br><span class="small">证据等级 B</span></td>
+<td><span class="tag tag-purple">区域级水浸报告</span><br><span class="small">区域级｜可信度：中</span></td>
+<td>2026-06-18<br>下午至傍晚<br>China Daily 19:28更新</td>
+<td>天水围<br><span class="small">元朗 / 天水围<br>22.4598, 114.0040</span></td>
+<td>官方：未公布<br>估计：0.05–0.25 m（估计/未公布）<br><span class="small">只有区域级报告，无街段和影像深度证据，估计仅作空间提示。</span></td>
+<td>官方：未公布<br>估计：区域级报告，具体街段未公布；以中心点周边约0.5–1.5 km作提示圈（估计/未公布）</td>
+<td>区域级水浸报告，未给出具体街段。<br><span class="small">China Daily称警方和本地媒体接获/报道天水围有水浸报告。</span></td>
+<td><a href="https://www.chinadailyasia.com/hk/article/635184" target="_blank">China Daily Asia</a></td>
+</tr>
+<tr>
+<td><b>R02</b><br><span class="small">证据等级 B</span></td>
+<td><span class="tag tag-purple">区域级水浸报告</span><br><span class="small">区域级｜可信度：中</span></td>
+<td>2026-06-18<br>下午至傍晚<br>China Daily 19:28更新</td>
+<td>元朗<br><span class="small">元朗<br>22.4445, 114.0222</span></td>
+<td>官方：未公布<br>估计：0.05–0.25 m（估计/未公布）<br><span class="small">区域级报道，可能与已列街段有重叠，不重复计为独立街段。</span></td>
+<td>官方：未公布<br>估计：区域级报告，具体街段未公布；以中心点周边约0.5–1.5 km作提示圈（估计/未公布）</td>
+<td>区域级水浸报告；与唐人新村、锦河路点位同属元朗及邻近区域，可作为范围补充。<br><span class="small">China Daily称警方和本地媒体接获/报道元朗有水浸报告。</span></td>
+<td><a href="https://www.chinadailyasia.com/hk/article/635184" target="_blank">China Daily Asia</a></td>
+</tr>
+<tr>
+<td><b>R03</b><br><span class="small">证据等级 B</span></td>
+<td><span class="tag tag-purple">区域级水浸报告</span><br><span class="small">区域级｜可信度：中</span></td>
+<td>2026-06-18<br>下午至傍晚<br>China Daily 19:28更新</td>
+<td>屯门<br><span class="small">屯门<br>22.3910, 113.9766</span></td>
+<td>官方：未公布<br>估计：0.05–0.20 m（估计/未公布）<br><span class="small">区域级报道，无精确位置和水深，低深度保守估计。</span></td>
+<td>官方：未公布<br>估计：区域级报告，具体街段未公布；以中心点周边约0.5–1.5 km作提示圈（估计/未公布）</td>
+<td>区域级水浸报告，未给出具体街段。<br><span class="small">China Daily称警方和本地媒体接获/报道屯门有水浸报告。</span></td>
+<td><a href="https://www.chinadailyasia.com/hk/article/635184" target="_blank">China Daily Asia</a></td>
+</tr>
+<tr>
+<td><b>R04</b><br><span class="small">证据等级 B</span></td>
+<td><span class="tag tag-purple">区域级水浸报告</span><br><span class="small">区域级｜可信度：中</span></td>
+<td>2026-06-18<br>下午至傍晚<br>China Daily 19:28更新</td>
+<td>打鼓岭<br><span class="small">北区 / 打鼓岭<br>22.5336, 114.1504</span></td>
+<td>官方：未公布<br>估计：0.05–0.25 m（估计/未公布）<br><span class="small">区域级报道，可能与坪輋路点重叠，不重复计为独立街段。</span></td>
+<td>官方：未公布<br>估计：区域级报告，具体街段未公布；以中心点周边约0.5–1.5 km作提示圈（估计/未公布）</td>
+<td>区域级水浸报告；与坪輋路近蓮麻坑路点位空间接近，可能重叠。<br><span class="small">China Daily称警方和本地媒体接获/报道打鼓岭有水浸报告；HKO称北部新界尤其元朗、上水、打鼓岭受大雨影响。</span></td>
+<td><a href="https://www.chinadailyasia.com/hk/article/635184" target="_blank">China Daily Asia + HKO背景</a></td>
+</tr>
+<tr>
+<td><b>R05</b><br><span class="small">证据等级 C</span></td>
+<td><span class="tag tag-blue">强降雨/水浸风险区</span><br><span class="small">区域级风险｜可信度：中低</span></td>
+<td>2026-06-18<br>12:55黑雨；18:35第二次黑雨<br>19:28报道更新</td>
+<td>上水<br><span class="small">北区 / 上水<br>22.5012, 114.1281</span></td>
+<td>官方：未公布；未直接确认街段水浸<br>估计：0–0.20 m（估计/未公布，风险区）<br><span class="small">只有强降雨风险提示，无水浸街段，深度作为风险占位。</span></td>
+<td>官方：未公布<br>估计：HKO/媒体提及北部新界，尤其上水受大雨影响；非具体水浸点。</td>
+<td>强降雨及水浸风险区，未作为确认水浸点统计。<br><span class="small">China Daily引述天文台称北部新界尤其元朗、上水、打鼓岭受大雨影响，应防范山洪/暴洪。</span></td>
+<td><a href="https://www.chinadailyasia.com/hk/article/635184" target="_blank">China Daily Asia / HKO背景</a></td>
+</tr>
+<tr>
+<td><b>I01</b><br><span class="small">证据等级 C</span></td>
+<td><span class="tag tag-blue">相关影响点，未确认水浸</span><br><span class="small">设施出入口｜可信度：中</span></td>
+<td>2026-06-18<br>约13:31<br>15:30 重开</td>
+<td>港铁深水埗站 A2 出入口<br><span class="small">深水埗<br>22.3300, 114.1620</span></td>
+<td>官方：未公布；未确认水浸<br>估计：0–0.10 m（估计/未公布，仅防护影响）<br><span class="small">防护关闭不等于水浸，仅作影响点。</span></td>
+<td>官方：未公布；未确认水浸<br>估计：出入口局部防护范围，约半径60 m（估计/未公布）</td>
+<td>出入口暂时关闭，非水浸确认点。<br><span class="small">香港电台/China Daily均提到港铁部分出入口因恶劣天气作防护关闭。</span></td>
+<td><a href="https://www.chinadailyasia.com/hk/article/635184" target="_blank">Routejam + China Daily Asia</a></td>
+</tr>
+<tr>
+<td><b>I02</b><br><span class="small">证据等级 C</span></td>
+<td><span class="tag tag-blue">相关影响点，未确认水浸</span><br><span class="small">设施出入口｜可信度：中</span></td>
+<td>2026-06-18<br>约13:31<br>15:30 重开</td>
+<td>港铁彩虹站 A1 出入口<br><span class="small">黄大仙 / 彩虹<br>22.3345, 114.2090</span></td>
+<td>官方：未公布；未确认水浸<br>估计：0–0.10 m（估计/未公布，仅防护影响）<br><span class="small">防护关闭不等于水浸，仅作影响点。</span></td>
+<td>官方：未公布；未确认水浸<br>估计：出入口局部防护范围，约半径60 m（估计/未公布）</td>
+<td>出入口暂时关闭，非水浸确认点。<br><span class="small">香港电台/China Daily均提到港铁部分出入口因恶劣天气作防护关闭。</span></td>
+<td><a href="https://www.chinadailyasia.com/hk/article/635184" target="_blank">Routejam + China Daily Asia</a></td>
+</tr>
+<tr>
+<td><b>I03</b><br><span class="small">证据等级 C</span></td>
+<td><span class="tag tag-blue">相关影响点，未确认水浸</span><br><span class="small">设施出入口｜可信度：中</span></td>
+<td>2026-06-18<br>约13:31<br>15:30 重开</td>
+<td>港铁黄大仙站 B3 出入口<br><span class="small">黄大仙<br>22.3418, 114.1940</span></td>
+<td>官方：未公布；未确认水浸<br>估计：0–0.10 m（估计/未公布，仅防护影响）<br><span class="small">防护关闭不等于水浸，仅作影响点。</span></td>
+<td>官方：未公布；未确认水浸<br>估计：出入口局部防护范围，约半径60 m（估计/未公布）</td>
+<td>出入口暂时关闭，非水浸确认点。<br><span class="small">香港电台/China Daily均提到港铁部分出入口因恶劣天气作防护关闭。</span></td>
+<td><a href="https://www.chinadailyasia.com/hk/article/635184" target="_blank">Routejam + China Daily Asia</a></td>
+</tr>
+    </tbody>
+  </table>
+
+  <div class="title" style="margin-top:20px;">来源与处理方式</div>
+  <ul class="source-list">
+    <li><a href="https://news.routejam.com/" target="_blank">Routejam 香港最新交通消息</a>：街段级确认水浸点：古洞路、粉锦公路、坪輋路、唐人/康人新村交汇处、锦河路、文锦渡口岸，以及港铁出入口防护关闭。</li>
+<li><a href="https://www.chinadailyasia.com/hk/article/635184" target="_blank">China Daily Asia：Second black rainstorm alert in a day as rain pounds HK</a>：区域级补充：警方和本地媒体收到天水围、元朗、屯门、打鼓岭水浸报告；确认文锦渡口岸因暴雨和水浸暂停清关；补充黑雨时间和新界西北/北部雨量。</li>
+<li><a href="https://www.weather.gov.hk/en/rhr/main.html" target="_blank">香港天文台：Regional Information on Heavy Rain and Thunderstorm</a>：背景图层：新界北部水浸特别报告关注范围包括元朗、八乡、锦田、新田、牛潭尾、上水、打鼓岭、沙头角等。</li>
+<li><a href="https://www.scmp.com/news/hong-kong/society/article/3357318/more-heavy-rain-expected-hong-kong-observatory-issues-amber-rainstorm-warning" target="_blank">SCMP：Hong Kong Observatory cancels amber rainstorm warning but more downpours forecast</a>：6月16日背景：有黄雨和持续不稳定天气，但没有可定位水浸点，所以未加入点位。</li>
+<li><a href="https://www.thestandard.com.hk/news/article/332588/Muddy-water-floods-KMB-bus-as-heavy-rain-strands-passengers-in-Ping-Che" target="_blank">The Standard：Muddy water floods KMB bus as heavy rain strands passengers in Ping Che</a>：重要排除项：这是2026-05-21事件，不属于最近3天，因此未纳入本图，但可作为未来视频反演水深方法示例。</li>
+  </ul>
+</div>
+
+<script>
+const events = [{"id": "F01", "layer": "confirmed", "category": "确认道路水浸", "source_level": "街段级", "date": "2026-06-18", "time_first": "约14:36", "time_last": "16:22–16:25 交通恢复", "location": "古洞路近古洞北路（近白石凹交汇处）", "district": "北区 / 古洞", "lat": 22.5069, "lon": 114.0869, "official_depth": "未公布", "estimated_depth": "0.25–0.45 m（估计/未公布）", "official_extent": "未公布", "estimated_extent": "约150–300 m道路段，约0.3–0.8 ha（估计/未公布）", "radius_m": 180, "evidence_grade": "A", "evidence": "交通消息列为水浸路段，后通报水浸处理、交通复常。", "impact": "道路水浸，交通及巴士服务受影响后恢复。", "source": "Routejam 汇集香港电台及 data.gov.hk/运输署交通消息", "url": "https://news.routejam.com/", "confidence": "高", "depth_rule": "明确街段水浸且交通受影响；未见官方水深，按道路可通行性保守估计。"}, {"id": "F02", "layer": "confirmed", "category": "确认道路水浸", "source_level": "街段级", "date": "2026-06-18", "time_first": "约14:36", "time_last": "16:22–16:25 交通恢复", "location": "粉锦公路近安圃村", "district": "北区 / 粉锦公路", "lat": 22.4903, "lon": 114.1171, "official_depth": "未公布", "estimated_depth": "0.15–0.35 m（估计/未公布）", "official_extent": "未公布", "estimated_extent": "约100–250 m道路段，约0.2–0.6 ha（估计/未公布）", "radius_m": 140, "evidence_grade": "A", "evidence": "交通消息列为水浸路段，巴士/龙运服务受影响，后通报恢复。", "impact": "影响九巴77K等及龙运E36/A36等服务。", "source": "Routejam 汇集香港电台及 data.gov.hk/运输署交通消息", "url": "https://news.routejam.com/", "confidence": "高", "depth_rule": "明确道路水浸并影响公共交通，但未称全线封闭或车辆受困。"}, {"id": "F03", "layer": "confirmed", "category": "确认道路水浸", "source_level": "街段级", "date": "2026-06-18", "time_first": "约13:50", "time_last": "16:22–16:25 交通恢复", "location": "坪輋路近蓮麻坑路", "district": "北区 / 打鼓岭—坪輋", "lat": 22.5295, "lon": 114.1536, "official_depth": "未公布", "estimated_depth": "0.10–0.30 m（估计/未公布）", "official_extent": "未公布", "estimated_extent": "约80–200 m道路段，约0.15–0.5 ha（估计/未公布）", "radius_m": 120, "evidence_grade": "A", "evidence": "交通消息称坪輋路近蓮麻坑路一段水浸，提醒驾驶人士小心，后通报恢复。", "impact": "影响九巴79K及新界专线小巴71、71A、72、605等。", "source": "Routejam 汇集香港电台及 data.gov.hk/运输署交通消息", "url": "https://news.routejam.com/", "confidence": "高", "depth_rule": "明确水浸但只提示小心驾驶，未见本次官方车辆半淹或封路描述。"}, {"id": "F04", "layer": "confirmed", "category": "确认道路水浸", "source_level": "街段级", "date": "2026-06-18", "time_first": "约14:36", "time_last": "16:22–16:25 交通恢复", "location": "唐人新村交汇处（部分消息写作“康人新村交汇处”，疑为同一处）", "district": "元朗 / 唐人新村", "lat": 22.4318, "lon": 114.0088, "official_depth": "未公布", "estimated_depth": "0.10–0.25 m（估计/未公布）", "official_extent": "未公布", "estimated_extent": "交汇处及相邻道路约80–180 m，约0.1–0.4 ha（估计/未公布）", "radius_m": 110, "evidence_grade": "A-", "evidence": "交通消息列为水浸路段，后列为交通恢复路段；地名存在唐人/康人写法差异。", "impact": "交汇处水浸，交通后恢复。", "source": "Routejam 汇集香港电台及 data.gov.hk/运输署交通消息", "url": "https://news.routejam.com/", "confidence": "中高", "depth_rule": "明确水浸，但地名写法需人工复核，范围保守。"}, {"id": "F05", "layer": "confirmed", "category": "确认道路水浸", "source_level": "街段级", "date": "2026-06-18", "time_first": "约14:36", "time_last": "16:22–16:25 交通恢复", "location": "锦河路近河背村", "district": "元朗 / 八乡—河背", "lat": 22.4455, "lon": 114.1052, "official_depth": "未公布", "estimated_depth": "0.10–0.25 m（估计/未公布）", "official_extent": "未公布", "estimated_extent": "约80–200 m道路段，约0.15–0.5 ha（估计/未公布）", "radius_m": 120, "evidence_grade": "A-", "evidence": "交通消息列为水浸路段，后列为交通恢复路段。", "impact": "道路水浸，交通后恢复。", "source": "Routejam 汇集香港电台及 data.gov.hk/运输署交通消息", "url": "https://news.routejam.com/", "confidence": "中高", "depth_rule": "明确水浸路段，但无封路、车辆受困或水深描述。"}, {"id": "F06", "layer": "confirmed", "category": "确认设施水浸", "source_level": "设施级", "date": "2026-06-18", "time_first": "约15:25", "time_last": "16:10 仍暂停服务；China Daily 19:28更新仍称暂停至另行通知", "location": "文锦渡口岸 / 文锦渡管制站", "district": "北区 / 文锦渡", "lat": 22.536, "lon": 114.12, "official_depth": "未公布", "estimated_depth": "0.20–0.50 m（估计/未公布）", "official_extent": "未公布", "estimated_extent": "口岸部分设施及通道，约0.5–2 ha（估计/未公布）", "radius_m": 220, "evidence_grade": "A", "evidence": "交通消息称部分设施水浸并暂停旅客及货运清关；China Daily称保安局声明，文锦渡管制站因暴雨和该区水浸暂停旅客及货运清关服务。", "impact": "旅客及货运清关服务暂停，跨境巴士停驶，旅客和跨境车辆须改用其他口岸。", "source": "Routejam + China Daily Asia", "url": "https://www.chinadailyasia.com/hk/article/635184", "confidence": "高", "depth_rule": "设施运作暂停，影响程度高；无官方水深，按设施水浸保守估计。"}, {"id": "R01", "layer": "regional", "category": "区域级水浸报告", "source_level": "区域级", "date": "2026-06-18", "time_first": "下午至傍晚", "time_last": "China Daily 19:28更新", "location": "天水围", "district": "元朗 / 天水围", "lat": 22.4598, "lon": 114.004, "official_depth": "未公布", "estimated_depth": "0.05–0.25 m（估计/未公布）", "official_extent": "未公布", "estimated_extent": "区域级报告，具体街段未公布；以中心点周边约0.5–1.5 km作提示圈（估计/未公布）", "radius_m": 900, "evidence_grade": "B", "evidence": "China Daily称警方和本地媒体接获/报道天水围有水浸报告。", "impact": "区域级水浸报告，未给出具体街段。", "source": "China Daily Asia", "url": "https://www.chinadailyasia.com/hk/article/635184", "confidence": "中", "depth_rule": "只有区域级报告，无街段和影像深度证据，估计仅作空间提示。"}, {"id": "R02", "layer": "regional", "category": "区域级水浸报告", "source_level": "区域级", "date": "2026-06-18", "time_first": "下午至傍晚", "time_last": "China Daily 19:28更新", "location": "元朗", "district": "元朗", "lat": 22.4445, "lon": 114.0222, "official_depth": "未公布", "estimated_depth": "0.05–0.25 m（估计/未公布）", "official_extent": "未公布", "estimated_extent": "区域级报告，具体街段未公布；以中心点周边约0.5–1.5 km作提示圈（估计/未公布）", "radius_m": 900, "evidence_grade": "B", "evidence": "China Daily称警方和本地媒体接获/报道元朗有水浸报告。", "impact": "区域级水浸报告；与唐人新村、锦河路点位同属元朗及邻近区域，可作为范围补充。", "source": "China Daily Asia", "url": "https://www.chinadailyasia.com/hk/article/635184", "confidence": "中", "depth_rule": "区域级报道，可能与已列街段有重叠，不重复计为独立街段。"}, {"id": "R03", "layer": "regional", "category": "区域级水浸报告", "source_level": "区域级", "date": "2026-06-18", "time_first": "下午至傍晚", "time_last": "China Daily 19:28更新", "location": "屯门", "district": "屯门", "lat": 22.391, "lon": 113.9766, "official_depth": "未公布", "estimated_depth": "0.05–0.20 m（估计/未公布）", "official_extent": "未公布", "estimated_extent": "区域级报告，具体街段未公布；以中心点周边约0.5–1.5 km作提示圈（估计/未公布）", "radius_m": 900, "evidence_grade": "B", "evidence": "China Daily称警方和本地媒体接获/报道屯门有水浸报告。", "impact": "区域级水浸报告，未给出具体街段。", "source": "China Daily Asia", "url": "https://www.chinadailyasia.com/hk/article/635184", "confidence": "中", "depth_rule": "区域级报道，无精确位置和水深，低深度保守估计。"}, {"id": "R04", "layer": "regional", "category": "区域级水浸报告", "source_level": "区域级", "date": "2026-06-18", "time_first": "下午至傍晚", "time_last": "China Daily 19:28更新", "location": "打鼓岭", "district": "北区 / 打鼓岭", "lat": 22.5336, "lon": 114.1504, "official_depth": "未公布", "estimated_depth": "0.05–0.25 m（估计/未公布）", "official_extent": "未公布", "estimated_extent": "区域级报告，具体街段未公布；以中心点周边约0.5–1.5 km作提示圈（估计/未公布）", "radius_m": 900, "evidence_grade": "B", "evidence": "China Daily称警方和本地媒体接获/报道打鼓岭有水浸报告；HKO称北部新界尤其元朗、上水、打鼓岭受大雨影响。", "impact": "区域级水浸报告；与坪輋路近蓮麻坑路点位空间接近，可能重叠。", "source": "China Daily Asia + HKO背景", "url": "https://www.chinadailyasia.com/hk/article/635184", "confidence": "中", "depth_rule": "区域级报道，可能与坪輋路点重叠，不重复计为独立街段。"}, {"id": "R05", "layer": "regional", "category": "强降雨/水浸风险区", "source_level": "区域级风险", "date": "2026-06-18", "time_first": "12:55黑雨；18:35第二次黑雨", "time_last": "19:28报道更新", "location": "上水", "district": "北区 / 上水", "lat": 22.5012, "lon": 114.1281, "official_depth": "未公布；未直接确认街段水浸", "estimated_depth": "0–0.20 m（估计/未公布，风险区）", "official_extent": "未公布", "estimated_extent": "HKO/媒体提及北部新界，尤其上水受大雨影响；非具体水浸点。", "radius_m": 800, "evidence_grade": "C", "evidence": "China Daily引述天文台称北部新界尤其元朗、上水、打鼓岭受大雨影响，应防范山洪/暴洪。", "impact": "强降雨及水浸风险区，未作为确认水浸点统计。", "source": "China Daily Asia / HKO背景", "url": "https://www.chinadailyasia.com/hk/article/635184", "confidence": "中低", "depth_rule": "只有强降雨风险提示，无水浸街段，深度作为风险占位。"}, {"id": "I01", "layer": "impact", "category": "相关影响点，未确认水浸", "source_level": "设施出入口", "date": "2026-06-18", "time_first": "约13:31", "time_last": "15:30 重开", "location": "港铁深水埗站 A2 出入口", "district": "深水埗", "lat": 22.33, "lon": 114.162, "official_depth": "未公布；未确认水浸", "estimated_depth": "0–0.10 m（估计/未公布，仅防护影响）", "official_extent": "未公布；未确认水浸", "estimated_extent": "出入口局部防护范围，约半径60 m（估计/未公布）", "radius_m": 60, "evidence_grade": "C", "evidence": "香港电台/China Daily均提到港铁部分出入口因恶劣天气作防护关闭。", "impact": "出入口暂时关闭，非水浸确认点。", "source": "Routejam + China Daily Asia", "url": "https://www.chinadailyasia.com/hk/article/635184", "confidence": "中", "depth_rule": "防护关闭不等于水浸，仅作影响点。"}, {"id": "I02", "layer": "impact", "category": "相关影响点，未确认水浸", "source_level": "设施出入口", "date": "2026-06-18", "time_first": "约13:31", "time_last": "15:30 重开", "location": "港铁彩虹站 A1 出入口", "district": "黄大仙 / 彩虹", "lat": 22.3345, "lon": 114.209, "official_depth": "未公布；未确认水浸", "estimated_depth": "0–0.10 m（估计/未公布，仅防护影响）", "official_extent": "未公布；未确认水浸", "estimated_extent": "出入口局部防护范围，约半径60 m（估计/未公布）", "radius_m": 60, "evidence_grade": "C", "evidence": "香港电台/China Daily均提到港铁部分出入口因恶劣天气作防护关闭。", "impact": "出入口暂时关闭，非水浸确认点。", "source": "Routejam + China Daily Asia", "url": "https://www.chinadailyasia.com/hk/article/635184", "confidence": "中", "depth_rule": "防护关闭不等于水浸，仅作影响点。"}, {"id": "I03", "layer": "impact", "category": "相关影响点，未确认水浸", "source_level": "设施出入口", "date": "2026-06-18", "time_first": "约13:31", "time_last": "15:30 重开", "location": "港铁黄大仙站 B3 出入口", "district": "黄大仙", "lat": 22.3418, "lon": 114.194, "official_depth": "未公布；未确认水浸", "estimated_depth": "0–0.10 m（估计/未公布，仅防护影响）", "official_extent": "未公布；未确认水浸", "estimated_extent": "出入口局部防护范围，约半径60 m（估计/未公布）", "radius_m": 60, "evidence_grade": "C", "evidence": "香港电台/China Daily均提到港铁部分出入口因恶劣天气作防护关闭。", "impact": "出入口暂时关闭，非水浸确认点。", "source": "Routejam + China Daily Asia", "url": "https://www.chinadailyasia.com/hk/article/635184", "confidence": "中", "depth_rule": "防护关闭不等于水浸，仅作影响点。"}];
+const map = L.map('map', { preferCanvas:true }).setView([22.43, 114.08], 10);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 19,
+  attribution: '&copy; OpenStreetMap contributors'
+}).addTo(map);
+
+function colorFor(e) {
+  if (e.category === "确认道路水浸") return "#d7191c";
+  if (e.category === "确认设施水浸") return "#fdae61";
+  if (e.category === "区域级水浸报告" || e.category === "强降雨/水浸风险区") return "#7b3294";
+  return "#2c7bb6";
+}
+function groupFor(e) {
+  if (e.layer === "confirmed") return confirmedLayer;
+  if (e.layer === "regional") return regionalLayer;
+  return impactLayer;
+}
+
+const confirmedLayer = L.layerGroup();
+const regionalLayer = L.layerGroup();
+const impactLayer = L.layerGroup();
+
+events.forEach(e => {
+  const color = colorFor(e);
+  const layer = groupFor(e);
+  const isConfirmed = e.layer === "confirmed";
+  const isRegional = e.layer === "regional";
+  L.circle([e.lat, e.lon], {
+    radius: e.radius_m,
+    color: color,
+    fillColor: color,
+    fillOpacity: isConfirmed ? 0.16 : (isRegional ? 0.08 : 0.06),
+    weight: isConfirmed ? 1.7 : 1.3,
+    dashArray: isConfirmed ? null : "6 5"
+  }).addTo(layer);
+
+  const marker = L.circleMarker([e.lat, e.lon], {
+    radius: isConfirmed ? 9 : (isRegional ? 7 : 6),
+    color: "#ffffff",
+    fillColor: color,
+    fillOpacity: 0.92,
+    weight: 2
+  }).addTo(layer);
+
+  marker.bindPopup(`
+    <div style="min-width:320px; line-height:1.45">
+      <b>${e.id}｜${e.location}</b><br>
+      <b>类别：</b>${e.category}<br>
+      <b>证据等级：</b>${e.evidence_grade}｜${e.source_level}｜可信度：${e.confidence}<br>
+      <b>时间：</b>${e.date} ${e.time_first} → ${e.time_last}<br>
+      <b>官方水深：</b>${e.official_depth}<br>
+      <b>估计水深：</b>${e.estimated_depth}<br>
+      <b>官方范围：</b>${e.official_extent}<br>
+      <b>估计范围：</b>${e.estimated_extent}<br>
+      <b>影响：</b>${e.impact}<br>
+      <b>证据：</b>${e.evidence}<br>
+      <b>估计依据：</b>${e.depth_rule}<br>
+      <b>来源：</b><a href="${e.url}" target="_blank">${e.source}</a>
+    </div>
+  `);
+});
+
+confirmedLayer.addTo(map);
+regionalLayer.addTo(map);
+impactLayer.addTo(map);
+
+L.control.layers(null, {
+  "A 街段/设施级确认水浸": confirmedLayer,
+  "B 区域级水浸/风险补充": regionalLayer,
+  "C 交通防护影响点": impactLayer
+}, { collapsed:false }).addTo(map);
+
+const legend = L.control({position:'bottomright'});
+legend.onAdd = function() {
+  const div = L.DomUtil.create('div', 'legend');
+  div.innerHTML = `
+    <b>图例</b><br>
+    <span class="dot" style="background:#d7191c"></span>A 确认道路水浸<br>
+    <span class="dot" style="background:#fdae61"></span>A 确认设施水浸<br>
+    <span class="dot" style="background:#7b3294"></span>B 区域级水浸/风险<br>
+    <span class="dot" style="background:#2c7bb6"></span>C 防护影响点<br>
+    <hr style="border:none;border-top:1px solid #ddd">
+    半透明圆 = 估计范围<br>
+    虚线圆 = 区域级或未确认水浸
+  `;
+  return div;
+};
+legend.addTo(map);
+</script>
+</body>
+</html>

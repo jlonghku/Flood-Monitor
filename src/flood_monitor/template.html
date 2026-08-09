@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>洪水監測綜合來源地圖</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+:root {
+  --bg:#f6f8fb; --card:#fff; --text:#1f2937; --muted:#5d6675; --line:#d8dee9;
+  --red:#d7191c; --orange:#fdae61; --blue:#2c7bb6; --purple:#7b3294;
+}
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,"Noto Sans SC","Microsoft YaHei",sans-serif; }
+#map { height:72vh; width:100%; border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+.panel { max-width:1360px; margin:0 auto; padding:16px 20px; }
+.title { font-size:25px; font-weight:800; margin:4px 0 8px; }
+.subtitle { color:var(--muted); line-height:1.6; font-size:14px; }
+.grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(185px,1fr)); gap:10px; margin-top:12px; }
+.card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:12px 14px; box-shadow:0 1px 4px rgba(0,0,0,.04); }
+.num { font-size:28px; font-weight:800; }
+.label { color:var(--muted); font-size:13px; line-height:1.4; }
+.warn { background:#fff8e6; border:1px solid #f1d082; border-radius:12px; padding:10px 12px; margin-top:12px; line-height:1.55; font-size:14px; }
+.note { background:#eef7ff; border:1px solid #a8cff0; border-radius:12px; padding:10px 12px; margin-top:10px; line-height:1.55; font-size:14px; }
+table { width:100%; border-collapse:collapse; background:white; margin-top:12px; font-size:13px; }
+th,td { border:1px solid var(--line); padding:8px; vertical-align:top; }
+th { background:#eef2f7; text-align:left; position:sticky; top:0; z-index:1; }
+a { color:#155db1; text-decoration:none; }
+a:hover { text-decoration:underline; }
+.tag { display:inline-block; padding:2px 7px; border-radius:999px; font-size:12px; margin:1px 0; }
+.tag-red { background:#ffe5e2; color:#8f1612; }
+.tag-orange { background:#fff1db; color:#805200; }
+.tag-blue { background:#e7f0ff; color:#174d8c; }
+.tag-purple { background:#f3e6ff; color:#5b2175; }
+.small { font-size:12px; color:var(--muted); }
+.legend { background:#fff; padding:10px 12px; border-radius:12px; box-shadow:0 2px 12px rgba(0,0,0,.18); line-height:1.55; font-size:13px; }
+.dot { display:inline-block; width:11px; height:11px; border-radius:50%; margin-right:6px; vertical-align:middle; }
+.source-list li { margin:6px 0; line-height:1.45; }
+.error { color:#8f1612; font-weight:700; }
+@media (max-width: 720px) {
+  .panel { padding:12px; }
+  #map { height:64vh; }
+  .title { font-size:21px; }
+  table { font-size:12px; }
+  th,td { padding:6px; }
+}
+</style>
+</head>
+<body data-json="flood_data.json">
+<div class="panel">
+  <div class="title" id="pageTitle">洪水監測綜合來源地圖</div>
+  <div class="subtitle" id="pageSubtitle">資料載入中。</div>
+  <div class="grid">
+    <div class="card"><div class="num" id="countConfirmed">0</div><div class="label">確認或候選水浸事件</div></div>
+    <div class="card"><div class="num" id="countRegional">0</div><div class="label">區域級/估算範圍</div></div>
+    <div class="card"><div class="num" id="countSources">0</div><div class="label">來源證據</div></div>
+    <div class="card"><div class="num" id="countDepth">0</div><div class="label">有水深或水深估算</div></div>
+  </div>
+  <div class="warn">
+    <b>水深和範圍：</b>公開來源通常不提供官方精確水深或淹沒邊界。凡由文字線索或事件強度推算的數值，均應按 JSON 內的 method、source_note 和 confidence 審核。
+  </div>
+  <div class="note" id="dataNote">
+    <b>資料來源：</b><span id="dataSource">flood_data.json</span>。本 HTML 只負責讀取、篩選和可視化，JSON 是唯一資料庫。
+  </div>
+</div>
+<div id="map"></div>
+
+<div class="panel">
+  <div class="title">綜合點位表</div>
+  <table>
+    <thead>
+      <tr><th>ID</th><th>類別</th><th>時間</th><th>位置</th><th>水深</th><th>範圍</th><th>影響與證據</th><th>來源</th></tr>
+    </thead>
+    <tbody id="eventRows">
+      <tr><td colspan="8">資料載入中。</td></tr>
+    </tbody>
+  </table>
+
+  <div class="title" style="margin-top:20px;">來源與處理方式</div>
+  <ul class="source-list" id="sourceList"></ul>
+</div>
+
+<!-- FLOOD_MONITOR_EMBED_JSON -->
+<script>
+const state = { db:null, events:[], map:null, layers:{} };
+
+function esc(value) {
+  return String(value ?? "").replace(/[&<>"']/g, ch => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[ch]));
+}
+
+function fmtTime(value) {
+  if (!value) return "未公布";
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return value;
+  return d.toLocaleString("zh-HK", { hour12:false });
+}
+
+function depthLabel(event) {
+  const depths = event.depth_observations || [];
+  if (!depths.length) return "官方：未公布<br>估計：未公布";
+  const parts = depths.map(d => {
+    const range = d.depth_range_m ? `${d.depth_range_m[0]}–${d.depth_range_m[1]} m` : "";
+    const value = d.depth_m != null ? `${d.depth_m} m` : range || "未公布";
+    const method = d.method ? `（${d.method}）` : "";
+    return `${esc(d.location_name || event.name || "位置")}：${esc(value)}${esc(method)}`;
+  });
+  return `官方：未公布<br>估計：${parts.join("<br>")}`;
+}
+
+function extentLabel(event) {
+  if (event.bbox) return `估計範圍 bbox：${event.bbox.map(v => Number(v).toFixed(4)).join(", ")}`;
+  if (event.flood_extent) return "來源提供淹沒範圍";
+  return "未公布；以點位或文字地名顯示";
+}
+
+function firstEvidence(event) {
+  return (event.evidence && event.evidence[0]) || {};
+}
+
+function locationOf(event) {
+  const evidence = firstEvidence(event);
+  const depth = (event.depth_observations || []).find(d => d.location);
+  if (depth && depth.location) return { lon: depth.location[0], lat: depth.location[1] };
+  if (evidence.location) return { lon: evidence.location[0], lat: evidence.location[1] };
+  if (event.bbox) return { lon:(event.bbox[0] + event.bbox[2]) / 2, lat:(event.bbox[1] + event.bbox[3]) / 2 };
+  if (evidence.bbox) return { lon:(evidence.bbox[0] + evidence.bbox[2]) / 2, lat:(evidence.bbox[1] + evidence.bbox[3]) / 2 };
+  return null;
+}
+
+function radiusFor(event) {
+  if (event.bbox) {
+    const dx = Math.abs(event.bbox[2] - event.bbox[0]);
+    const dy = Math.abs(event.bbox[3] - event.bbox[1]);
+    return Math.max(80, Math.min(1600, Math.max(dx, dy) * 90000));
+  }
+  const grade = String(firstEvidence(event).extracted_facts?.evidence_grade || "").toUpperCase();
+  if (grade.startsWith("B")) return 900;
+  if (grade.startsWith("C")) return 600;
+  return 180;
+}
+
+function categoryFor(event) {
+  const facts = firstEvidence(event).extracted_facts || {};
+  const grade = String(facts.evidence_grade || "").toUpperCase();
+  const kind = String(facts.evidence_kind || "");
+  if (kind.includes("facility")) return "確認設施水浸";
+  if (grade.startsWith("B")) return "區域級水浸報告";
+  if (grade.startsWith("C")) return "相關影響點";
+  return "確認/候選水浸";
+}
+
+function layerFor(event) {
+  const grade = String(firstEvidence(event).extracted_facts?.evidence_grade || "").toUpperCase();
+  if (grade.startsWith("B")) return "regional";
+  if (grade.startsWith("C")) return "impact";
+  return "confirmed";
+}
+
+function colorFor(event) {
+  const category = categoryFor(event);
+  if (category === "確認設施水浸") return "#fdae61";
+  if (category === "區域級水浸報告") return "#7b3294";
+  if (category === "相關影響點") return "#2c7bb6";
+  return "#d7191c";
+}
+
+function tagClass(event) {
+  const category = categoryFor(event);
+  if (category === "確認設施水浸") return "tag-orange";
+  if (category === "區域級水浸報告") return "tag-purple";
+  if (category === "相關影響點") return "tag-blue";
+  return "tag-red";
+}
+
+async function loadDatabase() {
+  const embedded = document.getElementById("flood-data");
+  if (embedded && embedded.textContent.trim()) {
+    document.getElementById("dataSource").textContent = "已注入 JSON";
+    return JSON.parse(embedded.textContent);
+  }
+  const url = document.body.dataset.json || "flood_data.json";
+  document.getElementById("dataSource").textContent = url;
+  const response = await fetch(url, { cache:"no-store" });
+  if (!response.ok) throw new Error(`讀取 ${url} 失敗：HTTP ${response.status}`);
+  return response.json();
+}
+
+function renderHeader(db) {
+  const meta = db.metadata || {};
+  const events = db.events || [];
+  const region = meta.region || events[0]?.region || "Hong Kong";
+  const start = meta.start_time || events.map(e => e.start_time).filter(Boolean).sort()[0] || "未公布";
+  const end = meta.end_time || events.map(e => e.end_time || e.start_time).filter(Boolean).sort().slice(-1)[0] || "未公布";
+  document.title = `${region} 洪水監測綜合來源地圖`;
+  document.getElementById("pageTitle").textContent = `${region} 洪水監測綜合來源地圖`;
+  document.getElementById("pageSubtitle").textContent = `覆蓋時間：${fmtTime(start)} 至 ${fmtTime(end)}。事件 ${events.length} 條，來源證據 ${(db.sources || []).length} 條。`;
+  document.getElementById("countConfirmed").textContent = events.filter(e => layerFor(e) === "confirmed").length;
+  document.getElementById("countRegional").textContent = events.filter(e => layerFor(e) === "regional").length;
+  document.getElementById("countSources").textContent = (db.sources || []).length;
+  document.getElementById("countDepth").textContent = events.filter(e => (e.depth_observations || []).length).length;
+}
+
+function renderTable(events) {
+  const rows = events.map((event, idx) => {
+    const evidence = firstEvidence(event);
+    const facts = evidence.extracted_facts || {};
+    const loc = evidence.location_name || (event.name || "").replace(/^Flood event near\s*/i, "") || "未公布";
+    const source = evidence.url ? `<a href="${esc(evidence.url)}" target="_blank">${esc(evidence.source_name || evidence.source_type || "來源")}</a>` : esc(evidence.source_name || "未公布");
+    return `<tr>
+<td><b>F${String(idx + 1).padStart(2, "0")}</b><br><span class="small">證據等級 ${esc(facts.evidence_grade || "未標註")}</span></td>
+<td><span class="tag ${tagClass(event)}">${esc(categoryFor(event))}</span><br><span class="small">${esc(evidence.source_type || "source")}｜可信度：${esc(event.confidence ?? evidence.confidence ?? "")}</span></td>
+<td>${esc(fmtTime(event.start_time || evidence.observed_time || evidence.published_time))}</td>
+<td>${esc(loc)}<br><span class="small">${esc(facts.area_description || event.name || "")}</span></td>
+<td>${depthLabel(event)}<br><span class="small">${esc(facts.source_note || "")}</span></td>
+<td>${esc(extentLabel(event))}</td>
+<td>${esc(evidence.summary || event.name || "")}<br><span class="small">${esc(evidence.raw_text || "")}</span></td>
+<td>${source}</td>
+</tr>`;
+  }).join("");
+  document.getElementById("eventRows").innerHTML = rows || `<tr><td colspan="8">沒有可視化事件。</td></tr>`;
+}
+
+function renderSources(db) {
+  const seen = new Set();
+  const items = (db.sources || []).filter(source => {
+    const key = `${source.source_name}|${source.url}|${source.location_name}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+  document.getElementById("sourceList").innerHTML = items.map(source => {
+    const href = source.url ? `<a href="${esc(source.url)}" target="_blank">${esc(source.source_name || source.source_type || "來源")}</a>` : esc(source.source_name || "來源");
+    return `<li>${href}：${esc(source.summary || source.raw_text || "")}<br><span class="small">${esc(source.location_name || "")}｜${esc(source.verification_status || "")}｜可信度：${esc(source.confidence ?? "")}</span></li>`;
+  }).join("") || "<li>沒有來源記錄。</li>";
+}
+
+function renderMap(events) {
+  if (typeof L === "undefined") {
+    renderFallbackMap(events);
+    return;
+  }
+  const points = events.map(event => ({ event, loc:locationOf(event) })).filter(item => item.loc);
+  state.map = L.map("map", { preferCanvas:true }).setView([22.43, 114.08], 10);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    maxZoom:19,
+    attribution:"&copy; OpenStreetMap contributors"
+  }).addTo(state.map);
+  state.layers.confirmed = L.layerGroup().addTo(state.map);
+  state.layers.regional = L.layerGroup().addTo(state.map);
+  state.layers.impact = L.layerGroup().addTo(state.map);
+
+  const bounds = [];
+  points.forEach(({ event, loc }, idx) => {
+    const layerName = layerFor(event);
+    const layer = state.layers[layerName];
+    const color = colorFor(event);
+    const confirmed = layerName === "confirmed";
+    const regional = layerName === "regional";
+    const radius = radiusFor(event);
+    const evidence = firstEvidence(event);
+    const facts = evidence.extracted_facts || {};
+    bounds.push([loc.lat, loc.lon]);
+    L.circle([loc.lat, loc.lon], {
+      radius,
+      color,
+      fillColor:color,
+      fillOpacity:confirmed ? 0.16 : (regional ? 0.08 : 0.06),
+      weight:confirmed ? 1.7 : 1.3,
+      dashArray:confirmed ? null : "6 5"
+    }).addTo(layer);
+    const marker = L.circleMarker([loc.lat, loc.lon], {
+      radius:confirmed ? 9 : (regional ? 7 : 6),
+      color:"#ffffff",
+      fillColor:color,
+      fillOpacity:0.92,
+      weight:2
+    }).addTo(layer);
+    marker.bindPopup(`<div style="min-width:320px; line-height:1.45">
+      <b>F${String(idx + 1).padStart(2, "0")}｜${esc(evidence.location_name || event.name)}</b><br>
+      <b>類別：</b>${esc(categoryFor(event))}<br>
+      <b>證據等級：</b>${esc(facts.evidence_grade || "未標註")}｜可信度：${esc(event.confidence ?? "")}<br>
+      <b>時間：</b>${esc(fmtTime(event.start_time || evidence.observed_time || evidence.published_time))}<br>
+      <b>水深：</b>${depthLabel(event)}<br>
+      <b>範圍：</b>${esc(extentLabel(event))}<br>
+      <b>證據：</b>${esc(evidence.summary || evidence.raw_text || "")}<br>
+      <b>來源：</b>${evidence.url ? `<a href="${esc(evidence.url)}" target="_blank">${esc(evidence.source_name || "來源")}</a>` : esc(evidence.source_name || "來源")}
+    </div>`);
+  });
+  if (bounds.length) state.map.fitBounds(bounds, { padding:[28, 28], maxZoom:13 });
+  L.control.layers(null, {
+    "A 確認/候選水浸": state.layers.confirmed,
+    "B 區域級水浸補充": state.layers.regional,
+    "C 相關影響點": state.layers.impact
+  }, { collapsed:false }).addTo(state.map);
+  const legend = L.control({ position:"bottomright" });
+  legend.onAdd = function() {
+    const div = L.DomUtil.create("div", "legend");
+    div.innerHTML = `<b>圖例</b><br>
+      <span class="dot" style="background:#d7191c"></span>A 確認/候選水浸<br>
+      <span class="dot" style="background:#fdae61"></span>A 設施水浸<br>
+      <span class="dot" style="background:#7b3294"></span>B 區域級水浸<br>
+      <span class="dot" style="background:#2c7bb6"></span>C 相關影響點<br>
+      <hr style="border:none;border-top:1px solid #ddd">
+      半透明圓 = 估計範圍<br>虛線圓 = 區域級或未確認水浸`;
+    return div;
+  };
+  legend.addTo(state.map);
+}
+
+function renderFallbackMap(events) {
+  const points = events.map((event, idx) => ({ event, loc:locationOf(event), idx })).filter(item => item.loc);
+  const map = document.getElementById("map");
+  map.style.height = "auto";
+  map.innerHTML = `<div class="panel">
+    <div class="warn"><b>地圖資源未載入：</b>Leaflet 或地圖圖磚不可用，已切換為點位清單。</div>
+    <table>
+      <thead><tr><th>ID</th><th>位置</th><th>經緯度</th><th>類別</th><th>來源</th></tr></thead>
+      <tbody>${points.map(({ event, loc, idx }) => {
+        const evidence = firstEvidence(event);
+        return `<tr><td>F${String(idx + 1).padStart(2, "0")}</td><td>${esc(evidence.location_name || event.name)}</td><td>${loc.lat.toFixed(4)}, ${loc.lon.toFixed(4)}</td><td>${esc(categoryFor(event))}</td><td>${esc(evidence.source_name || "")}</td></tr>`;
+      }).join("") || `<tr><td colspan="5">沒有可定位事件。</td></tr>`}</tbody>
+    </table>
+  </div>`;
+}
+
+async function main() {
+  try {
+    const db = await loadDatabase();
+    state.db = db;
+    state.events = db.events || [];
+    renderHeader(db);
+    renderTable(state.events);
+    renderSources(db);
+    renderMap(state.events);
+  } catch (err) {
+    document.getElementById("pageSubtitle").innerHTML = `<span class="error">${esc(err.message || err)}</span>`;
+    document.getElementById("eventRows").innerHTML = `<tr><td colspan="8" class="error">無法讀取 flood_data.json。若直接用 file:// 開啟，瀏覽器可能會阻止讀取本地 JSON；請使用注入版 map.html 或本地 HTTP server。</td></tr>`;
+  }
+}
+main();
+</script>
+</body>
+</html>

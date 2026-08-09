@@ -1,0 +1,4 @@
+interface:
+  display_name: "FloodMonitor Extract"
+  short_description: "Extract and fuse auditable flood observations"
+  default_prompt: "Use $flood-monitor-extract to turn source records into observations and flood events."

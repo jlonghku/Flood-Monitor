@@ -1,0 +1,4 @@
+interface:
+  display_name: "FloodMonitor Model"
+  short_description: "Reconstruct and forecast model-based inundation"
+  default_prompt: "Use $flood-monitor-model to reconstruct or forecast inundation with a configured model adapter."

@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "flood-monitor"
+version = "0.2.0"
+description = "Modular and auditable flood intelligence workflows"
+readme = "README.md"
+requires-python = ">=3.10"
+
+[project.scripts]
+flood-monitor = "flood_monitor.monitor:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+flood_monitor = ["*.html"]

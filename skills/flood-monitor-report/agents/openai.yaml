@@ -1,0 +1,4 @@
+interface:
+  display_name: "FloodMonitor Report"
+  short_description: "Generate interactive auditable flood intelligence reports"
+  default_prompt: "Use $flood-monitor-report to create an interactive auditable flood intelligence report."
