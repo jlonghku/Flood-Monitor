@@ -1,6 +1,6 @@
 {
   "name": "flood-monitor",
-  "version": "0.2.0+codex.20260809075149",
+  "version": "0.2.0+codex.20260809075800",
   "description": "Modular flood intelligence workflows for auditable collection, extraction, modelling, drainage analysis, and reporting.",
   "author": {
     "name": "Local developer"

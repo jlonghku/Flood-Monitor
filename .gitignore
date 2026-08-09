@@ -1,4 +1,11 @@
 __pycache__/
 *.py[cod]
 .DS_Store
+.pytest_cache/
+.coverage
+.venv/
+build/
+dist/
+*.egg-info/
+outputs/
 flood-monitor-demo-output/
