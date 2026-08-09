@@ -16,4 +16,4 @@ flood-monitor = "flood_monitor.monitor:main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-flood_monitor = ["*.html"]
+flood_monitor = ["*.html", "data/*.json"]

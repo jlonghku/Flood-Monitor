@@ -174,15 +174,20 @@ class FloodMap:
         times = [event.start_time for event in events if event.start_time]
         fields = flood_fields or []
         drainage = drainage_assessments or []
+        requested_range = manifest.requested_time_range if manifest else {}
+        demo_snapshot = manifest.configuration.get("demo_snapshot", {}) if manifest else {}
         return {
             "schema_version": 2,
             "metadata": {
                 "generated_at": datetime.now(timezone.utc).isoformat(),
                 "region": events[0].region if events else None,
-                "start_time": min(times) if times else None,
-                "end_time": max(times) if times else None,
+                "start_time": requested_range.get("start") or (min(times) if times else None),
+                "end_time": requested_range.get("end") or (max(times) if times else None),
                 "event_count": len(events),
                 "observation_count": len(observations or []),
+                "official_reported_case_total": demo_snapshot.get("official_reported_case_total"),
+                "named_location_count": demo_snapshot.get("named_location_count"),
+                "coverage_definition": demo_snapshot.get("coverage_definition"),
                 "model_field_count": len(fields),
                 "drainage_assessment_count": len(drainage),
                 "run_id": manifest.run_id if manifest else None,
@@ -257,6 +262,7 @@ class FloodMap:
             "evidence_id": evidence.evidence_id,
             "source_type": evidence.source_type,
             "source_name": evidence.source_name,
+            "publisher_or_provider": evidence.publisher_or_provider,
             "url": evidence.url,
             "observed_time": evidence.observed_time,
             "published_time": evidence.published_time,
@@ -282,6 +288,7 @@ class FloodMap:
             "evidence_id": evidence.evidence_id,
             "source_type": evidence.source_type,
             "source_name": evidence.source_name,
+            "publisher_or_provider": evidence.publisher_or_provider,
             "platform": facts.get("platform"),
             "verification_status": facts.get("verification_status"),
             "evidence_grade": facts.get("evidence_grade"),

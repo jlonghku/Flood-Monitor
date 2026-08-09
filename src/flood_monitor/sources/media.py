@@ -15,7 +15,11 @@ class NewsSource(SourceAdapter):
 
     def fetch(self, **query: Any) -> list[Evidence]:
         items = self.config.get("items", [])
-        evidence = [Evidence(source_type="news", source_name=self.name, **item) for item in items]
+        evidence = []
+        for item in items:
+            payload = dict(item)
+            source_type = payload.pop("source_type", "news")
+            evidence.append(Evidence(source_type=source_type, source_name=self.name, **payload))
         return [item for item in evidence if evidence_matches_query(item, **query)]
 
 

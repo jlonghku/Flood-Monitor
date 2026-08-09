@@ -41,6 +41,14 @@ PYTHONPATH=src python3 -m flood_monitor.monitor extract --input-file source_reco
 PYTHONPATH=src python3 -m flood_monitor.monitor report --events-file flood_data.json --output-dir outputs/report
 ```
 
+The bundled demo is a reproducible Hong Kong public-record snapshot covering
+2025-08-09 through 2026-08-09. It contains 32 traceable records across six
+flood episodes: 31 publicly named locations and one explicitly labelled
+Hong Kong-wide aggregate. The cited official episode totals add up to 68
+cases; records without a published location are retained in coverage metadata
+instead of being assigned invented coordinates. Approximate map anchors carry
+spatial uncertainty, and the demo does not fabricate water depths.
+
 `model` requires a configured `HydraulicModelAdapter`; it fails explicitly rather than fabricating a result. `drainage` can summarize hotspots and spatial associations, but does not claim causality without stronger evidence.
 
 ## Compatible outputs

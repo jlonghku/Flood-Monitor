@@ -5,12 +5,11 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
-from zoneinfo import ZoneInfo
 
 from .collect import CollectionPipeline
+from .demo import load_hk_one_year_demo
 from .drainage import DrainageAnalyzer
 from .extract import ExtractionPipeline
 from .gis import FloodMap
@@ -205,97 +204,17 @@ class FloodMonitor:
         return events
 
 def demo_monitor() -> FloodMonitor:
-    now = datetime.now(ZoneInfo("Asia/Hong_Kong"))
-    event_day = now - timedelta(days=30)
-    road_time = event_day.replace(hour=14, minute=36, second=0, microsecond=0).isoformat()
-    facility_observed_time = event_day.replace(hour=18, minute=35, second=0, microsecond=0).isoformat()
-    facility_published_time = event_day.replace(hour=19, minute=28, second=0, microsecond=0).isoformat()
-    source = NewsSource(
-        "demo_hk_news",
-        {
-            "items": [
-                {
-                    "published_time": road_time,
-                    "observed_time": road_time,
-                    "location_name": "古洞路近古洞北路",
-                    "location": (114.0869, 22.5069),
-                    "raw_text": "交通消息列為水浸路段，古洞路近古洞北路一帶水浸，巴士服務受影響後恢復。",
-                    "summary": "街段級道路水浸，交通受影響後恢復。",
-                    "url": "https://news.routejam.com/",
-                    "confidence": 0.78,
-                    "extracted_facts": {
-                        "evidence_grade": "A",
-                        "evidence_kind": "road_flood_report",
-                        "verification_status": "reported_by_media",
-                        "area_description": "北區古洞路近古洞北路。",
-                        "source_note": "demo evidence; depth is a screening estimate.",
-                        "depth_observation": {
-                            "depth_m": 0.35,
-                            "depth_range_m": [0.25, 0.45],
-                            "method": "demo_screening_estimate",
-                            "reference_object": "traffic_disruption",
-                        },
-                        "severity": "moderate",
-                    },
-                },
-                {
-                    "published_time": facility_published_time,
-                    "observed_time": facility_observed_time,
-                    "location_name": "文錦渡管制站",
-                    "location": (114.12, 22.536),
-                    "raw_text": "文錦渡管制站因暴雨和水浸暫停旅客及貨物清關服務。",
-                    "summary": "設施級水浸，清關服務暫停。",
-                    "url": "https://www.chinadailyhk.com/hk/article/635184",
-                    "confidence": 0.82,
-                    "extracted_facts": {
-                        "evidence_grade": "A",
-                        "evidence_kind": "facility_report",
-                        "verification_status": "reported_by_media_with_government_statement",
-                        "area_description": "文錦渡邊境管制站一帶。",
-                        "source_note": "demo evidence; depth is a screening estimate.",
-                        "depth_observation": {
-                            "depth_m": 0.3,
-                            "depth_range_m": [0.15, 0.5],
-                            "method": "demo_screening_estimate",
-                            "reference_object": "facility_service_suspended_due_to_flooding",
-                        },
-                        "severity": "moderate",
-                    },
-                },
-                {
-                    "published_time": facility_published_time,
-                    "observed_time": facility_observed_time,
-                    "location_name": "天水圍",
-                    "location": (114.004, 22.4598),
-                    "bbox": (113.99, 22.445, 114.02, 22.475),
-                    "raw_text": "警方和本地媒體收到天水圍有水浸報告，未提供具體街段或水深。",
-                    "summary": "區域級水浸報告，無官方水深。",
-                    "url": "https://www.chinadailyhk.com/hk/article/635184",
-                    "confidence": 0.62,
-                    "extracted_facts": {
-                        "evidence_grade": "B",
-                        "evidence_kind": "regional_report",
-                        "verification_status": "reported_by_media",
-                        "area_description": "天水圍區域級報告，具體街段未公布。",
-                        "source_note": "demo evidence; regional location and depth are estimates.",
-                        "depth_observation": {
-                            "depth_m": 0.15,
-                            "depth_range_m": [0.05, 0.25],
-                            "method": "demo_regional_estimate",
-                            "reference_object": "source_confirms_flooding_no_depth",
-                        },
-                        "severity": "minor",
-                    },
-                }
-            ]
-        },
-    )
+    snapshot, items = load_hk_one_year_demo()
+    source = NewsSource("demo_hk_public_records", {"items": items})
     monitor = FloodMonitor([source])
     monitor.search(
-        start_time=(now - timedelta(days=365)).isoformat(),
-        end_time=now.isoformat(),
-        region="Hong Kong",
+        start_time=snapshot["start_time"],
+        end_time=snapshot["end_time"],
+        region=snapshot["region"],
     )
+    if monitor.manifest:
+        monitor.manifest.configuration["demo_snapshot"] = snapshot
+        monitor.manifest.warnings.extend(snapshot["limitations"])
     return monitor
 
 
@@ -339,7 +258,7 @@ def _configured_monitor(args) -> FloodMonitor:
 def main() -> None:
     parser = argparse.ArgumentParser(description="FloodMonitor modular flood intelligence CLI")
     parser.add_argument("command", nargs="?", choices=["run", "collect", "extract", "model", "drainage", "report"], help="pipeline stage; legacy flags remain supported")
-    parser.add_argument("--demo", action="store_true", help="run an offline demo event")
+    parser.add_argument("--demo", action="store_true", help="run the bundled one-year Hong Kong public-record snapshot")
     parser.add_argument("--live-hk", action="store_true", help="fetch live Hong Kong HKO open data")
     parser.add_argument("--multisource", action="store_true", help="run configured RSS/article/GIS/file sources without default HKO sources")
     parser.add_argument("--start-time")

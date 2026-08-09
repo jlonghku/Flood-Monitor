@@ -1,0 +1,164 @@
+{
+  "snapshot": {
+    "snapshot_id": "hk-flood-public-records-2025-08-09_2026-08-09",
+    "region": "Hong Kong",
+    "start_time": "2025-08-09T00:00:00+08:00",
+    "end_time": "2026-08-09T23:59:59+08:00",
+    "as_of": "2026-08-09",
+    "coverage_definition": "All publicly verifiable flood episode records in the window for which the cited source names a Hong Kong location, plus an area-level summary only when no locations were published.",
+    "limitations": [
+      "Official incident totals can exceed the named location records because some releases publish only an aggregate count.",
+      "Coordinates are approximate visualization anchors and carry explicit spatial uncertainty; they are not surveyed flood points.",
+      "Rainfall and warning records without direct evidence of flooding are excluded from FloodEvent counts."
+    ]
+  },
+  "episodes": [
+    {
+      "episode_id": "2025-08-14-black-rain",
+      "observed_time": "2025-08-14T08:00:00+08:00",
+      "published_time": "2025-08-14T19:05:00+08:00",
+      "publisher": "Hong Kong SAR Government News",
+      "source_type": "government",
+      "url": "https://www.news.gov.hk/eng/2025/08/20250814/20250814_190559_438.html",
+      "official_reported_case_count": 6,
+      "coverage_note": "The Government reported six resolved flooding cases. Public reports named five locations or facilities represented here; the remaining case had no distinct public location in the cited material.",
+      "severity": "moderate",
+      "locations": [
+        {
+          "name": "西營盤水街",
+          "location": [114.1427, 22.2873],
+          "location_uncertainty_m": 300,
+          "publisher": "RTHK",
+          "source_type": "news",
+          "url": "https://news.rthk.hk/rthk/ch/component/k2/1818153-20250814.htm",
+          "text": "西營盤水街在黑色暴雨警告期間出現水浸，車輛及行人一度無法通過。"
+        },
+        {
+          "name": "西區德輔道西",
+          "location": [114.1410, 22.2875],
+          "location_uncertainty_m": 500,
+          "publisher": "RTHK",
+          "source_type": "news",
+          "url": "https://news.rthk.hk/rthk/ch/component/k2/1818153-20250814.htm",
+          "text": "德輔道西在黑色暴雨警告期間有水浸報告，現場積水影響道路通行。"
+        },
+        {
+          "name": "新界西堆填區附近道路",
+          "location": [113.929, 22.414],
+          "location_uncertainty_m": 1800,
+          "text": "政府公布新界西堆填區附近道路曾有水浸，個案其後已處理。"
+        },
+        {
+          "name": "曾咀靈灰安置所附近道路",
+          "location": [113.940, 22.425],
+          "location_uncertainty_m": 1800,
+          "text": "政府公布曾咀靈灰安置所附近道路曾有水浸，個案其後已處理。"
+        },
+        {
+          "name": "北大嶼山廢物轉運站",
+          "location": [113.997, 22.314],
+          "location_uncertainty_m": 2200,
+          "text": "政府公布北大嶼山廢物轉運站曾出現水浸，個案其後已處理。"
+        }
+      ]
+    },
+    {
+      "episode_id": "2025-09-24-ragasa",
+      "observed_time": "2025-09-24T11:00:00+08:00",
+      "published_time": "2025-09-24T13:00:00+08:00",
+      "publisher": "Drainage Services Department",
+      "source_type": "dsd",
+      "url": "https://www.youtube.com/watch?v=UcBnFiIcJo0",
+      "official_reported_case_count": 24,
+      "coverage_note": "The HKO post-event report recorded at least 24 flooding reports. DSD publicly named the 12 locations represented here; later aggregate totals did not identify every remaining location.",
+      "severity": "moderate",
+      "locations": [
+        {"name": "杏花邨", "location": [114.240, 22.278], "location_uncertainty_m": 900, "text": "渠務署確認超強颱風樺加沙期間杏花邨有水浸個案。"},
+        {"name": "城門河大涌橋路及源禾路附近", "location": [114.195, 22.389], "location_uncertainty_m": 900, "text": "渠務署確認城門河近大涌橋路及源禾路有水浸個案。"},
+        {"name": "將軍澳海濱長廊近唐俊街", "location": [114.262, 22.307], "location_uncertainty_m": 900, "text": "渠務署確認將軍澳海濱長廊近唐俊街有水浸個案。"},
+        {"name": "林村河廣福橋附近", "location": [114.169, 22.446], "location_uncertainty_m": 900, "text": "渠務署確認林村河近廣福橋有水浸個案。"},
+        {"name": "沙頭角新樓街", "location": [114.222, 22.545], "location_uncertainty_m": 900, "text": "渠務署確認沙頭角新樓街有水浸個案。"},
+        {"name": "大埔王肇枝中學行人隧道", "location": [114.170, 22.449], "location_uncertainty_m": 900, "text": "渠務署確認大埔王肇枝中學附近行人隧道有水浸個案。"},
+        {"name": "黃大仙竹園及翠竹街近鵬程苑", "location": [114.193, 22.345], "location_uncertainty_m": 1200, "text": "渠務署確認黃大仙竹園、翠竹街近鵬程苑一帶有水浸個案。"},
+        {"name": "龍鼓灘路", "location": [113.930, 22.392], "location_uncertainty_m": 1400, "text": "渠務署確認龍鼓灘路有水浸個案。"},
+        {"name": "大澳", "location": [113.863, 22.255], "location_uncertainty_m": 1600, "text": "渠務署確認大澳有水浸個案。"},
+        {"name": "荃錦公路近木棉下村", "location": [114.118, 22.381], "location_uncertainty_m": 1500, "text": "渠務署確認荃錦公路近木棉下村有水浸個案。"},
+        {"name": "香港富麗敦海洋公園酒店", "location": [114.174, 22.236], "location_uncertainty_m": 900, "text": "渠務署確認香港富麗敦海洋公園酒店附近有水浸個案。"},
+        {"name": "鯉魚門", "location": [114.240, 22.292], "location_uncertainty_m": 1300, "text": "渠務署確認鯉魚門有水浸個案。"}
+      ]
+    },
+    {
+      "episode_id": "2026-05-20-north-nt-rain",
+      "observed_time": "2026-05-20T22:00:00+08:00",
+      "published_time": "2026-05-21T18:00:00+08:00",
+      "publisher": "RTHK",
+      "source_type": "news",
+      "url": "https://news.rthk.hk/rthk/ch/component/k2/1855473-20260521.htm",
+      "official_reported_case_count": 7,
+      "coverage_note": "RTHK reported DSD confirmation of seven flooding cases and named all seven locations represented here.",
+      "severity": "moderate",
+      "locations": [
+        {"name": "大頭嶺迴旋處", "location": [114.111, 22.510], "location_uncertainty_m": 1000, "text": "渠務署確認大頭嶺迴旋處有水浸個案。"},
+        {"name": "粉錦公路", "location": [114.107, 22.488], "location_uncertainty_m": 1800, "text": "渠務署確認粉錦公路有水浸個案。"},
+        {"name": "粉嶺坪輋", "location": [114.161, 22.524], "location_uncertainty_m": 1800, "text": "渠務署確認粉嶺坪輋有水浸個案。"},
+        {"name": "粉嶺公路", "location": [114.137, 22.499], "location_uncertainty_m": 1800, "text": "渠務署確認粉嶺公路有水浸個案。"},
+        {"name": "上水古洞", "location": [114.096, 22.506], "location_uncertainty_m": 1800, "text": "渠務署確認上水古洞有水浸個案。"},
+        {"name": "上水彩園路寶石湖路行人隧道", "location": [114.109, 22.504], "location_uncertainty_m": 900, "text": "渠務署確認上水彩園路與寶石湖路附近行人隧道有水浸個案。"},
+        {"name": "石崗機場路", "location": [114.082, 22.436], "location_uncertainty_m": 1600, "text": "渠務署確認石崗機場路有水浸個案。"}
+      ]
+    },
+    {
+      "episode_id": "2026-06-08-heavy-rain",
+      "observed_time": "2026-06-08T12:00:00+08:00",
+      "published_time": "2026-06-08T18:00:00+08:00",
+      "publisher": "RTHK",
+      "source_type": "news",
+      "url": "https://news.rthk.hk/rthk/ch/component/k2/1857737-20260608.htm",
+      "official_reported_case_count": 4,
+      "coverage_note": "RTHK reported DSD confirmation of four flooding cases and named all four locations represented here.",
+      "severity": "minor",
+      "locations": [
+        {"name": "天水圍聚星路", "location": [114.005, 22.454], "location_uncertainty_m": 900, "text": "渠務署確認天水圍聚星路有水浸個案。"},
+        {"name": "下竹園村", "location": [114.091, 22.445], "location_uncertainty_m": 2500, "text": "渠務署確認下竹園村有水浸個案。"},
+        {"name": "沙田曾大屋", "location": [114.190, 22.371], "location_uncertainty_m": 1000, "text": "渠務署確認沙田曾大屋有水浸個案。"},
+        {"name": "新田永平村路", "location": [114.065, 22.503], "location_uncertainty_m": 1400, "text": "渠務署確認新田永平村路有水浸個案。"}
+      ]
+    },
+    {
+      "episode_id": "2026-06-18-north-nt-rain",
+      "observed_time": "2026-06-18T18:00:00+08:00",
+      "published_time": "2026-06-18T22:00:00+08:00",
+      "publisher": "RTHK",
+      "source_type": "news",
+      "url": "https://news.rthk.hk/rthk/ch/component/k2/1859092-20260618.htm",
+      "official_reported_case_count": 19,
+      "coverage_note": "RTHK reported 19 DSD-confirmed flooding cases across Tuen Mun, Tin Shui Wai and Sheung Shui. The report specifically named the three unresolved locations represented here; other individual locations were not published.",
+      "severity": "moderate",
+      "locations": [
+        {"name": "文錦渡管制站", "location": [114.129, 22.537], "location_uncertainty_m": 800, "text": "文錦渡管制站及附近道路因暴雨出現水浸，設施服務受影響。", "url": "https://www.info.gov.hk/gia/general/202606/18/P2026061800727.htm", "publisher": "Hong Kong SAR Government", "source_type": "government"},
+        {"name": "新田竹園村", "location": [114.069, 22.501], "location_uncertainty_m": 1600, "text": "渠務署確認新田竹園村有尚待處理的水浸個案。"},
+        {"name": "錦田高埔村", "location": [114.060, 22.437], "location_uncertainty_m": 1600, "text": "渠務署確認錦田高埔村有尚待處理的水浸個案。"}
+      ]
+    },
+    {
+      "episode_id": "2026-07-26-noul",
+      "observed_time": "2026-07-26T14:00:00+08:00",
+      "published_time": "2026-07-26T18:00:00+08:00",
+      "publisher": "Hong Kong SAR Government News",
+      "source_type": "government",
+      "url": "https://www.news.gov.hk/eng/2026/07/20260726/20260726_142103_947.html",
+      "official_reported_case_count": 8,
+      "coverage_note": "The Government reported eight flooding cases during Tropical Cyclone Noul but did not publish individual locations, so this episode is represented by one explicitly labelled Hong Kong-wide aggregate record.",
+      "severity": "minor",
+      "locations": [
+        {
+          "name": "香港（熱帶氣旋鸚鵡水浸個案匯總）",
+          "bbox": [113.82, 22.13, 114.44, 22.57],
+          "location_uncertainty_m": 35000,
+          "aggregate": true,
+          "text": "政府公布熱帶氣旋鸚鵡襲港期間收到八宗水浸報告，但未逐一公布地點。"
+        }
+      ]
+    }
+  ]
+}

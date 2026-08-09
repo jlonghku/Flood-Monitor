@@ -52,8 +52,9 @@ a:hover { text-decoration:underline; }
   <div class="title" id="pageTitle">洪水監測綜合來源地圖</div>
   <div class="subtitle" id="pageSubtitle">資料載入中。</div>
   <div class="grid">
-    <div class="card"><div class="num" id="countConfirmed">0</div><div class="label">確認或候選水浸事件</div></div>
-    <div class="card"><div class="num" id="countRegional">0</div><div class="label">區域級/估算範圍</div></div>
+    <div class="card"><div class="num" id="countConfirmed">0</div><div class="label">全部可追溯水浸記錄</div></div>
+    <div class="card"><div class="num" id="countReported">—</div><div class="label">官方公布個案總數（同一時段）</div></div>
+    <div class="card"><div class="num" id="countRegional">0</div><div class="label">區域級/匯總記錄</div></div>
     <div class="card"><div class="num" id="countSources">0</div><div class="label">來源證據</div></div>
     <div class="card"><div class="num" id="countDepth">0</div><div class="label">有水深或水深估算</div></div>
   </div>
@@ -145,14 +146,15 @@ function categoryFor(event) {
   const grade = String(facts.evidence_grade || "").toUpperCase();
   const kind = String(facts.evidence_kind || "");
   if (kind.includes("facility")) return "確認設施水浸";
-  if (grade.startsWith("B")) return "區域級水浸報告";
+  if (facts.is_aggregate_summary || kind.includes("aggregate")) return "區域級水浸匯總";
   if (grade.startsWith("C")) return "相關影響點";
   return "確認/候選水浸";
 }
 
 function layerFor(event) {
-  const grade = String(firstEvidence(event).extracted_facts?.evidence_grade || "").toUpperCase();
-  if (grade.startsWith("B")) return "regional";
+  const facts = firstEvidence(event).extracted_facts || {};
+  const grade = String(facts.evidence_grade || "").toUpperCase();
+  if (facts.is_aggregate_summary || String(facts.evidence_kind || "").includes("aggregate")) return "regional";
   if (grade.startsWith("C")) return "impact";
   return "confirmed";
 }
@@ -194,11 +196,15 @@ function renderHeader(db) {
   const end = meta.end_time || events.map(e => e.end_time || e.start_time).filter(Boolean).sort().slice(-1)[0] || "未公布";
   document.title = `${region} 洪水監測綜合來源地圖`;
   document.getElementById("pageTitle").textContent = `${region} 洪水監測綜合來源地圖`;
-  document.getElementById("pageSubtitle").textContent = `覆蓋時間：${fmtTime(start)} 至 ${fmtTime(end)}。事件 ${events.length} 條，來源證據 ${(db.sources || []).length} 條。`;
-  document.getElementById("countConfirmed").textContent = events.filter(e => layerFor(e) === "confirmed").length;
+  document.getElementById("pageSubtitle").textContent = `覆蓋時間：${fmtTime(start)} 至 ${fmtTime(end)}。可追溯記錄 ${events.length} 條，來源證據 ${(db.sources || []).length} 條。`;
+  document.getElementById("countConfirmed").textContent = events.length;
+  document.getElementById("countReported").textContent = meta.official_reported_case_total ?? "—";
   document.getElementById("countRegional").textContent = events.filter(e => layerFor(e) === "regional").length;
   document.getElementById("countSources").textContent = (db.sources || []).length;
   document.getElementById("countDepth").textContent = events.filter(e => (e.depth_observations || []).length).length;
+  if (meta.coverage_definition) {
+    document.getElementById("dataNote").insertAdjacentHTML("beforeend", `<br><b>覆蓋口徑：</b>${esc(meta.coverage_definition)}`);
+  }
 }
 
 function renderTable(events) {
@@ -206,7 +212,8 @@ function renderTable(events) {
     const evidence = firstEvidence(event);
     const facts = evidence.extracted_facts || {};
     const loc = evidence.location_name || (event.name || "").replace(/^Flood event near\s*/i, "") || "未公布";
-    const source = evidence.url ? `<a href="${esc(evidence.url)}" target="_blank">${esc(evidence.source_name || evidence.source_type || "來源")}</a>` : esc(evidence.source_name || "未公布");
+    const publisher = evidence.publisher_or_provider || evidence.source_name || evidence.source_type || "來源";
+    const source = evidence.url ? `<a href="${esc(evidence.url)}" target="_blank">${esc(publisher)}</a>` : esc(publisher || "未公布");
     return `<tr>
 <td><b>F${String(idx + 1).padStart(2, "0")}</b><br><span class="small">證據等級 ${esc(facts.evidence_grade || "未標註")}</span></td>
 <td><span class="tag ${tagClass(event)}">${esc(categoryFor(event))}</span><br><span class="small">${esc(evidence.source_type || "source")}｜可信度：${esc(event.confidence ?? evidence.confidence ?? "")}</span></td>
@@ -224,13 +231,14 @@ function renderTable(events) {
 function renderSources(db) {
   const seen = new Set();
   const items = (db.sources || []).filter(source => {
-    const key = `${source.source_name}|${source.url}|${source.location_name}`;
+    const key = `${source.publisher_or_provider || source.source_name}|${source.url}|${source.location_name}`;
     if (seen.has(key)) return false;
     seen.add(key);
     return true;
   });
   document.getElementById("sourceList").innerHTML = items.map(source => {
-    const href = source.url ? `<a href="${esc(source.url)}" target="_blank">${esc(source.source_name || source.source_type || "來源")}</a>` : esc(source.source_name || "來源");
+    const publisher = source.publisher_or_provider || source.source_name || source.source_type || "來源";
+    const href = source.url ? `<a href="${esc(source.url)}" target="_blank">${esc(publisher)}</a>` : esc(publisher);
     return `<li>${href}：${esc(source.summary || source.raw_text || "")}<br><span class="small">${esc(source.location_name || "")}｜${esc(source.verification_status || "")}｜可信度：${esc(source.confidence ?? "")}</span></li>`;
   }).join("") || "<li>沒有來源記錄。</li>";
 }
