@@ -17,18 +17,16 @@ FloodMonitor is one Codex Plugin containing six focused Skills and one shared Py
 
 See [docs/skills-architecture.md](docs/skills-architecture.md) for boundaries and data flow.
 
-## Install in Codex
+## Install from GitHub
 
-Add the GitHub repository as a Codex plugin marketplace:
+Paste this into Codex:
 
-```bash
-codex plugin marketplace add jlonghku/Flood-Monitor
+```text
+Install the Flood Monitor Codex plugin from
+https://github.com/jlonghku/Flood-Monitor.
 ```
 
-> **Current packaging note:** this command requires a repository-level
-> `.agents/plugins/marketplace.json`. The current repository is the plugin
-> source itself; Git marketplace installation will become active after that
-> marketplace manifest and its matching distribution layout are added.
+After installation, start a new Codex conversation to load the plugin.
 
 ## Repository layout
 
